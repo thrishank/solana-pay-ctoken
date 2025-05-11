@@ -91,8 +91,6 @@ export async function POST(request: NextRequest) {
 
   transaction.add(meta_ix);
 
-  transaction.partialSign(mint);
-
   const serializedTransaction = transaction.serialize({
     requireAllSignatures: false,
   });
