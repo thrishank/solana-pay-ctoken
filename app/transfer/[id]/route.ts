@@ -1,4 +1,6 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
+import { PrismaClient } from "@prisma/client";
+
 import { NextRequest, NextResponse } from "next/server";
 import {
   CompressedTokenProgram,
@@ -16,17 +18,29 @@ export async function GET() {
   );
 }
 
-export async function POST(request: NextRequest) {
-  const url = new URL(request.url);
-  const recipient = url.searchParams.get("recipient")!;
-  const amount = url.searchParams.get("amount")!;
-  const mint = url.searchParams.get("mint")!;
+const prisma = new PrismaClient();
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+
+  const data = await prisma.transfer.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!data) {
+    return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+  }
 
   const { account } = await request.json();
 
   const fromPubkey = new PublicKey(account);
-  const toPubkey = new PublicKey(recipient);
-  const mint_address = new PublicKey(mint);
+  const toPubkey = new PublicKey(data.recipient);
+  const mint_address = new PublicKey(data.mint);
 
   const RPC_ENDPOINT =
     "https://devnet.helius-rpc.com/?api-key=20475b23-b7f2-46be-badc-ad4f62baf079";
@@ -42,7 +56,7 @@ export async function POST(request: NextRequest) {
 
   const [inputAccounts] = selectMinCompressedTokenAccountsForTransfer(
     compressedTokenAccounts.items,
-    amount,
+    data.amount,
   );
 
   const proof = await connection.getValidityProof(
@@ -53,7 +67,7 @@ export async function POST(request: NextRequest) {
     payer: fromPubkey,
     inputCompressedTokenAccounts: inputAccounts,
     toAddress: toPubkey,
-    amount,
+    amount: data.amount,
     recentInputStateRootIndices: proof.rootIndices,
     recentValidityProof: proof.compressedProof,
   });

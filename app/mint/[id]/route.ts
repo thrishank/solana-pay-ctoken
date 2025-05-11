@@ -1,4 +1,5 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
+import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { CompressedTokenProgram } from "@lightprotocol/compressed-token";
 import { createRpc, Rpc } from "@lightprotocol/stateless.js";
@@ -13,15 +14,21 @@ export async function GET() {
   );
 }
 
-export async function POST(request: NextRequest) {
-  const url = new URL(request.url);
-  const recipient = url.searchParams.get("recipient");
-  const amount = url.searchParams.get("amount");
-  const mint = url.searchParams.get("mint");
+const prisma = new PrismaClient();
 
-  console.log(recipient, amount, mint);
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
 
-  if (!recipient || !amount || !mint) {
+  const data = await prisma.mint.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!data) {
     return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
   }
 
@@ -30,8 +37,8 @@ export async function POST(request: NextRequest) {
   let payer, toPubkey, mint_address;
   try {
     payer = new PublicKey(account);
-    toPubkey = new PublicKey(recipient);
-    mint_address = new PublicKey(mint);
+    toPubkey = new PublicKey(data.recipient);
+    mint_address = new PublicKey(data.mint);
   } catch (e) {
     console.error(e);
     return NextResponse.json(
@@ -53,7 +60,7 @@ export async function POST(request: NextRequest) {
     feePayer: payer,
     mint: mint_address,
     authority: payer,
-    amount: parseInt(amount),
+    amount: data.amount,
     toPubkey,
   });
 
