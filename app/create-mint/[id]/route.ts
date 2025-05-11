@@ -1,4 +1,5 @@
 import { Keypair, PublicKey, Transaction } from "@solana/web3.js";
+import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { CompressedTokenProgram } from "@lightprotocol/compressed-token";
 import { createRpc, Rpc } from "@lightprotocol/stateless.js";
@@ -18,9 +19,30 @@ export async function GET() {
   );
 }
 
-export async function POST(request: NextRequest) {
-  const url = new URL(request.url);
-  const decimals = url.searchParams.get("decimals")!;
+const prisma = new PrismaClient();
+
+export async function POST(
+  request: NextRequest,
+  context: { params: { id: string } },
+) {
+  const id = context.params.id;
+
+  console.log(id);
+
+  const data = await prisma.createToken.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!data) {
+    return NextResponse.json(
+      {
+        message: "Token not found",
+      },
+      { status: 404 },
+    );
+  }
 
   const { account } = await request.json();
 
@@ -38,7 +60,7 @@ export async function POST(request: NextRequest) {
   const instruction = await CompressedTokenProgram.createMint({
     feePayer: payer,
     mint: mint.publicKey,
-    decimals: parseInt(decimals),
+    decimals: data?.decimals,
     authority: payer,
     freezeAuthority: null,
     rentExemptBalance,
@@ -63,9 +85,9 @@ export async function POST(request: NextRequest) {
   )[0];
 
   const tokenMetadata = {
-    name: "My Token",
-    symbol: "MYT",
-    uri: "https://example.com/metadata.json",
+    name: data?.tokenName,
+    symbol: data?.symbol,
+    uri: data.url,
     sellerFeeBasisPoints: 0,
     creators: null,
     collection: null,
