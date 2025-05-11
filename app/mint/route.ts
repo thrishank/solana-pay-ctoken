@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
   const mint = url.searchParams.get("mint")!;
 
   const { account } = await request.json();
+
   const payer = new PublicKey(account);
   const toPubkey = new PublicKey(recipient);
-
   const mint_address = new PublicKey(mint);
 
   const RPC_ENDPOINT =
@@ -32,12 +32,11 @@ export async function POST(request: NextRequest) {
 
   const { blockhash } = await connection.getLatestBlockhash();
 
-  // @ts-expect-error mintTo method type signature is not correctly inferred from the SDK
   const instruction = await CompressedTokenProgram.mintTo({
     feePayer: payer,
     mint: mint_address,
     authority: payer,
-    amount,
+    amount: parseInt(amount),
     toPubkey,
   });
 
