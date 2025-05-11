@@ -1,27 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { QRCodeDisplay } from "@/components/qr-code-display"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { CheckCircle2 } from "lucide-react"
+import { useState, useRef, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2 } from "lucide-react";
+import { createQR, encodeURL, TransactionRequestURLFields } from "@solana/pay";
 
 const transferTokenSchema = z.object({
   mintAddress: z.string().min(32, "Please enter a valid Solana address"),
   amount: z.coerce.number().positive("Amount must be greater than 0"),
   recipient: z.string().min(32, "Please enter a valid Solana address"),
-})
+});
 
-type TransferTokenFormValues = z.infer<typeof transferTokenSchema>
+type TransferTokenFormValues = z.infer<typeof transferTokenSchema>;
 
 export function TransferTokenForm() {
-  const [qrCodeData, setQrCodeData] = useState<string | null>(null)
-  const [isSuccess, setIsSuccess] = useState(false)
+  const qrRef = useRef<HTMLDivElement>(null);
+  const [url, setURL] = useState("");
 
   const form = useForm<TransferTokenFormValues>({
     resolver: zodResolver(transferTokenSchema),
@@ -30,35 +38,48 @@ export function TransferTokenForm() {
       amount: 1,
       recipient: "",
     },
-  })
+  });
 
-  function onSubmit(data: TransferTokenFormValues) {
-    // In a real app, this would generate a Solana Pay URL
-    const solanaPayUrl = `solana:${encodeURIComponent(
-      JSON.stringify({
-        action: "transfer-token",
-        mintAddress: data.mintAddress,
-        amount: data.amount,
-        recipient: data.recipient,
-      }),
-    )}`
+  useEffect(() => {
+    if (!url || !qrRef.current) return;
 
-    setQrCodeData(solanaPayUrl)
-    setIsSuccess(true)
+    const solanaPayUrl = new URL(url);
+    const urlFields: TransactionRequestURLFields = {
+      link: solanaPayUrl,
+    };
+
+    const qr = createQR(encodeURL(urlFields), 400, "transparent");
+    qrRef.current.innerHTML = "";
+    qr.append(qrRef.current);
+  }, [url]);
+
+  async function onSubmit(data: TransferTokenFormValues) {
+    const res = await fetch("/api/transfer", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const id = await res.json();
+
+    setURL(`https://solana-pay-ctoken.vercel.app/transfer/${id}`);
   }
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold text-gray-900">Transfer Token</h2>
-        <p className="text-sm text-gray-500">Transfer tokens to another wallet</p>
+        <p className="text-sm text-gray-500">
+          Transfer tokens to another wallet
+        </p>
       </div>
 
-      {isSuccess && (
+      {url && (
         <Alert className="bg-green-50 border-green-200">
           <CheckCircle2 className="h-4 w-4 text-green-600" />
           <AlertDescription className="text-green-700">
-            Transfer request generated successfully. Scan the QR code to proceed.
+            Transfer request generated successfully. Scan the QR code to
+            proceed.
           </AlertDescription>
         </Alert>
       )}
@@ -102,25 +123,26 @@ export function TransferTokenForm() {
               <FormItem>
                 <FormLabel>Recipient</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter recipient wallet address" {...field} />
+                  <Input
+                    placeholder="Enter recipient wallet address"
+                    {...field}
+                  />
                 </FormControl>
-                <FormDescription>The wallet address to receive the tokens</FormDescription>
+                <FormDescription>
+                  The wallet address to receive the tokens
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full cursor-pointer">
             Generate QR Code
           </Button>
         </form>
       </Form>
 
-      {qrCodeData && (
-        <div className="mt-8">
-          <QRCodeDisplay value={qrCodeData} />
-        </div>
-      )}
+      {url && <div ref={qrRef}></div>}
     </div>
-  )
+  );
 }
