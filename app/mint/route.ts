@@ -19,11 +19,26 @@ export async function POST(request: NextRequest) {
   const amount = url.searchParams.get("amount")!;
   const mint = url.searchParams.get("mint")!;
 
+  if (!recipient || !amount || !mint) {
+    return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+  }
+
   const { account } = await request.json();
 
-  const payer = new PublicKey(account);
-  const toPubkey = new PublicKey(recipient);
-  const mint_address = new PublicKey(mint);
+  let payer, toPubkey, mint_address;
+  try {
+    payer = new PublicKey(account);
+    toPubkey = new PublicKey(recipient);
+    mint_address = new PublicKey(mint);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json(
+      { error: "Invalid public key provided" },
+      { status: 400 },
+    );
+  }
+
+  console.log(payer, toPubkey, mint_address);
 
   const RPC_ENDPOINT =
     "https://devnet.helius-rpc.com/?api-key=20475b23-b7f2-46be-badc-ad4f62baf079";
