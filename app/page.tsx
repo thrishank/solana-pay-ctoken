@@ -6,7 +6,7 @@ export default function Home() {
   const qrRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const url = new URL("http://192.168.129.145:3000/api");
+    const url = new URL("https://solana-pay-ctoken.vercel.app/api");
     const urlFields: TransactionRequestURLFields = {
       link: url,
     };

@@ -19,8 +19,12 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const { account, reference } = await request.json();
+  const { account } = await request.json();
+
   const fromPubkey = new PublicKey(account);
+  const toPubkey = new PublicKey(
+    "EXBdeRCdiNChKyD7akt64n9HgSXEpUtpPEhmbnm4L6iH",
+  );
 
   const connection = new Connection(clusterApiUrl("devnet"));
 
@@ -33,14 +37,8 @@ export async function POST(request: NextRequest) {
 
   const instruction = SystemProgram.transfer({
     fromPubkey,
-    toPubkey: new PublicKey(reference),
-    lamports: 0.001 * LAMPORTS_PER_SOL,
-  });
-
-  instruction.keys.push({
-    pubkey: new PublicKey(reference),
-    isSigner: false,
-    isWritable: false,
+    toPubkey,
+    lamports: 0.01 * LAMPORTS_PER_SOL,
   });
 
   transaction.add(instruction);
