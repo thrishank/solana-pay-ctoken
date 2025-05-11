@@ -1,4 +1,4 @@
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { ComputeBudgetProgram, PublicKey, Transaction } from "@solana/web3.js";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { CompressedTokenProgram } from "@lightprotocol/compressed-token";
@@ -70,6 +70,9 @@ export async function POST(
   });
 
   transaction.add(instruction);
+  transaction.add(
+    ComputeBudgetProgram.setComputeUnitLimit({ units: 1_000_000 }),
+  );
 
   const serializedTransaction = transaction.serialize({
     requireAllSignatures: false,
