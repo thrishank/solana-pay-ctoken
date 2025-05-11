@@ -15,9 +15,11 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   const url = new URL(request.url);
-  const recipient = url.searchParams.get("recipient")!;
-  const amount = url.searchParams.get("amount")!;
-  const mint = url.searchParams.get("mint")!;
+  const recipient = url.searchParams.get("recipient");
+  const amount = url.searchParams.get("amount");
+  const mint = url.searchParams.get("mint");
+
+  console.log(recipient, amount, mint);
 
   if (!recipient || !amount || !mint) {
     return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
