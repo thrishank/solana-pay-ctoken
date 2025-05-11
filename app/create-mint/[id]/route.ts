@@ -23,9 +23,9 @@ const prisma = new PrismaClient();
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const id = context.params.id;
+  const { id } = await params;
 
   console.log(id);
 
