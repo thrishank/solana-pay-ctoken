@@ -42,25 +42,25 @@ export default function Home() {
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger
                 value="create"
-                className="flex flex-col items-center gap-1 py-3"
+                className="flex flex-col items-center gap-1 py-3 cursor-pointer"
               >
                 <span className="hidden md:inline">Create Token</span>
               </TabsTrigger>
               <TabsTrigger
                 value="mint"
-                className="flex flex-col items-center gap-1 py-3"
+                className="flex flex-col items-center gap-1 py-3 cursor-pointer"
               >
                 <span className="hidden md:inline">Mint</span>
               </TabsTrigger>
               <TabsTrigger
                 value="transfer"
-                className="flex flex-col items-center gap-1 py-3"
+                className="flex flex-col items-center gap-1 py-3 cursor-pointer"
               >
                 <span className="hidden md:inline">Transfer</span>
               </TabsTrigger>
               <TabsTrigger
                 value="claim"
-                className="flex flex-col items-center gap-1 py-3"
+                className="flex flex-col items-center gap-1 py-3 cursor-pointer"
               >
                 <span className="hidden md:inline">Create Airdrop</span>
               </TabsTrigger>

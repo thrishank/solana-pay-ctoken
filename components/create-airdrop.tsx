@@ -22,7 +22,7 @@ import { createQR, encodeURL, TransactionRequestURLFields } from "@solana/pay";
 const claimTokenSchema = z.object({
   mintAddress: z.string().min(32, "Please enter a valid Solana address"),
   amountPerClaim: z.coerce.number().positive("Amount must be greater than 0"),
-  totalAmount: z.number(),
+  totalAmount: z.coerce.number().positive("Amount must be greater than 0"),
 });
 
 type ClaimTokenFormValues = z.infer<typeof claimTokenSchema>;
@@ -156,7 +156,7 @@ export function CreateAidrop() {
         </form>
       </Form>
 
-      <div className="flex flex-col items-center gap-6 p-6 bg-white rounded-xl shadow-lg max-w-md mx-auto">
+      <div className="flex flex-col items-center gap-6 p-6 bg-white rounded-xl max-w-md mx-auto">
         {url && (
           <div className="w-full text-center">
             <div className="text-sm font-medium text-gray-800 mb-2">
