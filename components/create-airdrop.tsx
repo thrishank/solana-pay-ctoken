@@ -22,19 +22,23 @@ import { createQR, encodeURL, TransactionRequestURLFields } from "@solana/pay";
 const claimTokenSchema = z.object({
   mintAddress: z.string().min(32, "Please enter a valid Solana address"),
   amountPerClaim: z.coerce.number().positive("Amount must be greater than 0"),
+  totalAmount: z.number(),
 });
 
 type ClaimTokenFormValues = z.infer<typeof claimTokenSchema>;
 
-export function ClaimTokenForm() {
+export function CreateAidrop() {
   const qrRef = useRef<HTMLDivElement>(null);
   const [url, setURL] = useState("");
+  const claimQrRef = useRef<HTMLDivElement>(null);
+  const [claim, setClaim] = useState("");
 
   const form = useForm<ClaimTokenFormValues>({
     resolver: zodResolver(claimTokenSchema),
     defaultValues: {
       mintAddress: "",
       amountPerClaim: 1,
+      totalAmount: 0,
     },
   });
 
@@ -49,18 +53,31 @@ export function ClaimTokenForm() {
     const qr = createQR(encodeURL(urlFields), 400, "transparent");
     qrRef.current.innerHTML = "";
     qr.append(qrRef.current);
-  }, [url]);
+
+    if (!claimQrRef.current) return;
+    const claimUrl = new URL(claim);
+    const filed: TransactionRequestURLFields = {
+      link: claimUrl,
+    };
+
+    const claimQr = createQR(encodeURL(filed), 400, "transparent");
+    claimQrRef.current.innerHTML = "";
+    claimQr.append(claimQrRef.current);
+  }, [url, claim]);
 
   async function onSubmit(data: ClaimTokenFormValues) {
-    const res = await fetch("/api/transfer", {
+    const res = await fetch("/api/create-airdrop", {
       method: "POST",
       body: JSON.stringify(data),
       headers: { "Content-Type": "application/json" },
     });
 
-    const id = await res.json();
+    const res_data = await res.json();
 
-    setURL(`https://solana-pay-ctoken.vercel.app/transfer/${id}`);
+    setURL(
+      `https://solana-pay-ctoken.vercel.app/transfer/${res_data.transfer}`,
+    );
+    setClaim(`https://solana-pay-ctoken.vercel.app/claim/${res_data.id}`);
   }
 
   return (
@@ -116,11 +133,32 @@ export function ClaimTokenForm() {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="amountPerClaim"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Total Amount</FormLabel>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Total Number of tokens to airdrop
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <Button type="submit" className="w-full">
-            Generate QR Code
+            Generate QR Code To Pay
           </Button>
         </form>
       </Form>
+
+      {url && <div ref={qrRef}></div>}
+
+      {claim && <div ref={claimQrRef}></div>}
     </div>
   );
 }

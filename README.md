@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## TODO
+
+1. Create airdrop claim page send tokens to account
+2. claim page with /qr/id
+3. qr code popup on generate and share qrcode button copy link
+4. add wallet connect in all 4 states
+5. Int issue in database

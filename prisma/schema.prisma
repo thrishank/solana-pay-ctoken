@@ -36,7 +36,11 @@ model Transfer {
 }
 
 model Claim {
-  id     String @id @default(cuid())
-  mint   String
-  amount Int
+  id          String   @id @default(cuid())
+  mint        String
+  amount      Int
+  totalAmount Int
+  wallet      String // creator's wallet
+  privateKey  String
+  claimedBy   String[] // recipient wallet who claimed
 }
