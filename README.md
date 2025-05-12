@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Solana Pay Compressed Tokens
 
-## Getting Started
+create solana pay qrcode/url to create, mint and transfer compressed tokens.
+Also create airdrop campaigns, mint experience tokens and let attendees claim them by scanning a QR code
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Create Compressed Token
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Enter the token name, symbol, decimals and metadata URI. And generate the Soalna Pay QR code/URL.
+The qrcode/url contains a serializedTransaction which contain two instructions create compressed token, and create the metadata using metaplex.
+The qr code can be scanned by any solana pay supported wallet(SolFlare), and the user will be prompted to approve the transaction.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Mint Compressed Token
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Enter the token mint address, amount(raw in decimals) and recipient wallet address. And generate the Soalna Pay QR code/URL.
 
-## Learn More
+### Transfer Compressed Token
 
-To learn more about Next.js, take a look at the following resources:
+Enter the token mint address, amount(raw in decimals) and recipient wallet address. And generate the Soalna Pay QR code/URL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### cPOP
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Once you have minted the tokens. And if you want to airdrop the tokens to multiple wallets. You can create a airdrop solana pay QR code/URL.
+Enter the mint address, amount each account can claim, and total amount to airdrop, then click on create Airdrop this will result in two qr codes.
+One if for the creator to deposit some tokens. And other qr code/ url is to claim the tokens. you can share the claim qr code with the attendees. And they can scan the qr code to claim the tokens.
