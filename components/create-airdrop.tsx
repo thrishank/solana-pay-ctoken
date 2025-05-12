@@ -38,7 +38,7 @@ export function CreateAidrop() {
     defaultValues: {
       mintAddress: "",
       amountPerClaim: 1,
-      totalAmount: 0,
+      totalAmount: 100,
     },
   });
 
@@ -135,7 +135,7 @@ export function CreateAidrop() {
 
           <FormField
             control={form.control}
-            name="amountPerClaim"
+            name="totalAmount"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Total Amount</FormLabel>
@@ -150,7 +150,7 @@ export function CreateAidrop() {
             )}
           />
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full cursor-pointer">
             Generate QR Code To Pay
           </Button>
         </form>
