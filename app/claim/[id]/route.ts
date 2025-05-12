@@ -1,6 +1,7 @@
 import {
   ComputeBudgetProgram,
   Keypair,
+  LAMPORTS_PER_SOL,
   PublicKey,
   Transaction,
 } from "@solana/web3.js";
@@ -99,6 +100,8 @@ export async function POST(
   );
 
   console.log(wallet.publicKey);
+
+  await connection.requestAirdrop(wallet.publicKey, 0.05 * LAMPORTS_PER_SOL);
 
   transaction.partialSign(wallet);
 

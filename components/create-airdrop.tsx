@@ -77,7 +77,7 @@ export function CreateAidrop() {
     setURL(
       `https://solana-pay-ctoken.vercel.app/transfer/${res_data.transfer}`,
     );
-    setClaim(`https://solana-pay-ctoken.vercel.app/claim/${res_data.id}`);
+    setClaim(`https://solana-pay-ctoken.vercel.app/claim/${res_data.claim}`);
   }
 
   return (
