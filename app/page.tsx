@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreateTokenForm } from "@/components/create-token-form";
 import { MintTokenForm } from "@/components/mint-token-form";
 import { TransferTokenForm } from "@/components/transfer-token-form";
-import { CreateAidrop } from "@/components/create-airdrop";
+import { CreateAirdrop } from "@/components/create-airdrop";
 export default function Home() {
   const qrRef = useRef<HTMLDivElement>(null);
 
@@ -77,7 +77,7 @@ export default function Home() {
                 <TransferTokenForm />
               </TabsContent>
               <TabsContent value="claim">
-                <CreateAidrop />
+                <CreateAirdrop />
               </TabsContent>
             </div>
           </Tabs>

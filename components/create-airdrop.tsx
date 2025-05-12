@@ -15,8 +15,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2 } from "lucide-react";
+import { Copy, Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useToast } from "@/lib/use-toast";
 import { createQR, encodeURL, TransactionRequestURLFields } from "@solana/pay";
 
 const claimTokenSchema = z.object({
@@ -27,11 +33,14 @@ const claimTokenSchema = z.object({
 
 type ClaimTokenFormValues = z.infer<typeof claimTokenSchema>;
 
-export function CreateAidrop() {
+export function CreateAirdrop() {
   const qrRef = useRef<HTMLDivElement>(null);
-  const [url, setURL] = useState("");
   const claimQrRef = useRef<HTMLDivElement>(null);
+  const [url, setURL] = useState("");
   const [claim, setClaim] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<ClaimTokenFormValues>({
     resolver: zodResolver(claimTokenSchema),
@@ -43,61 +52,76 @@ export function CreateAidrop() {
   });
 
   useEffect(() => {
-    if (!url || !qrRef.current) return;
+    if (!isModalOpen) return;
 
-    const solanaPayUrl = new URL(url);
-    const urlFields: TransactionRequestURLFields = {
-      link: solanaPayUrl,
-    };
+    if (url && qrRef.current) {
+      const solanaPayUrl = new URL(url);
+      const urlFields: TransactionRequestURLFields = { link: solanaPayUrl };
+      const qr = createQR(encodeURL(urlFields), 400, "transparent");
+      qrRef.current.innerHTML = "";
+      qr.append(qrRef.current);
+    }
 
-    const qr = createQR(encodeURL(urlFields), 400, "transparent");
-    qrRef.current.innerHTML = "";
-    qr.append(qrRef.current);
-
-    if (!claimQrRef.current) return;
-    const claimUrl = new URL(claim);
-    const filed: TransactionRequestURLFields = {
-      link: claimUrl,
-    };
-
-    const claimQr = createQR(encodeURL(filed), 400, "transparent");
-    claimQrRef.current.innerHTML = "";
-    claimQr.append(claimQrRef.current);
-  }, [url, claim]);
+    if (claim && claimQrRef.current) {
+      const claimUrl = new URL(claim);
+      const filed: TransactionRequestURLFields = { link: claimUrl };
+      const claimQr = createQR(encodeURL(filed), 400, "transparent");
+      claimQrRef.current.innerHTML = "";
+      claimQr.append(claimQrRef.current);
+    }
+  }, [url, claim, isModalOpen]);
 
   async function onSubmit(data: ClaimTokenFormValues) {
-    const res = await fetch("/api/create-airdrop", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" },
-    });
+    setIsModalOpen(true);
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/create-airdrop", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+      });
 
-    const res_data = await res.json();
+      if (!res.ok) throw new Error("Failed to create airdrop");
 
-    setURL(
-      `https://solana-pay-ctoken.vercel.app/transfer/${res_data.transfer}`,
-    );
-    setClaim(`https://solana-pay-ctoken.vercel.app/claim/${res_data.claim}`);
+      const res_data = await res.json();
+
+      setURL(
+        `https://solana-pay-ctoken.vercel.app/transfer/${res_data.transfer}`,
+      );
+      setClaim(`https://solana-pay-ctoken.vercel.app/claim/${res_data.claim}`);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error",
+        description: "Failed to create airdrop",
+        variant: "destructive",
+      });
+      setIsModalOpen(false);
+    } finally {
+      setIsLoading(false);
+    }
   }
+
+  const copyUrlToClipboard = () => {
+    navigator.clipboard.writeText("solana:" + claim);
+    toast({
+      title: "URL Copied",
+      description: "The URL has been copied to your clipboard",
+    });
+  };
+
+  const copy_url = () => {
+    navigator.clipboard.writeText("solana:" + url);
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-gray-900">Create Claim</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Create Airdrop</h2>
         <p className="text-sm text-gray-500">
           Create a QR code that allows recipients to claim tokens
         </p>
       </div>
-
-      {url && (
-        <Alert className="bg-green-50 border-green-200">
-          <CheckCircle2 className="h-4 w-4 text-green-600" />
-          <AlertDescription className="text-green-700">
-            Claim request generated successfully. Share the QR code with
-            recipients.
-          </AlertDescription>
-        </Alert>
-      )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -143,44 +167,118 @@ export function CreateAidrop() {
                   <Input type="number" {...field} />
                 </FormControl>
                 <FormDescription>
-                  Total Number of tokens to airdrop
+                  Total number of tokens to airdrop
                 </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full cursor-pointer">
-            Generate QR Code To Pay
+          <Button
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "Create Airdrop"
+            )}
           </Button>
         </form>
       </Form>
 
-      <div className="flex flex-col items-center gap-6 p-6 bg-white rounded-xl max-w-md mx-auto">
-        {url && (
-          <div className="w-full text-center">
-            <div className="text-sm font-medium text-gray-800 mb-2">
-              Pay the requested tokens
-            </div>
-            <div
-              ref={qrRef}
-              className="mx-auto p-4 bg-gray-100 rounded-lg border w-fit"
-            />
-          </div>
-        )}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-4xl bg-white p-0 overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="px-6 pt-6 pb-0 flex justify-between items-center border-b-0">
+              <span>Airdrop QR Codes</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-full"
+                onClick={() => setIsModalOpen(false)}
+              >
+                <span className="sr-only">Close</span>
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 p-6">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-[400px]">
+                <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
+                <p className="mt-4 text-sm text-gray-500">
+                  Generating QR codes...
+                </p>
+              </div>
+            ) : (
+              <>
+                {url && (
+                  <div>
+                    <div className="text-center text-sm font-medium text-gray-800 mb-2">
+                      Pay the requested tokens
+                    </div>
+                    <div
+                      ref={qrRef}
+                      className="mb-4 flex justify-center items-center rounded-lg border bg-gray-100"
+                    />
 
-        {claim && (
-          <div>
-            <div className="text-base font-semibold text-gray-800">
-              QR Code to claim tokens
-            </div>
-            <div
-              ref={claimQrRef}
-              className="p-4 bg-gray-100 rounded-lg border w-fit"
-            />
+                    <div className="relative mt-4 w-full">
+                      <Input
+                        value={"solana:" + url}
+                        readOnly
+                        className="w-full pr-16 text-sm text-gray-500 truncate cursor-default"
+                        title={"solana:" + url}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-transparent"
+                        onClick={copy_url}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                {claim && (
+                  <div>
+                    <div className="text-center text-sm font-medium text-gray-800 mb-2">
+                      Claim tokens
+                    </div>
+                    <div
+                      ref={claimQrRef}
+                      className="mb-4 flex justify-center items-center rounded-lg border bg-gray-100"
+                    />
+
+                    <div className="relative mt-4 w-full">
+                      <Input
+                        value={"solana:" + url}
+                        readOnly
+                        className="w-full pr-16 text-sm text-gray-500 truncate cursor-default"
+                        title={"solana:" + url}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-transparent"
+                        onClick={copyUrlToClipboard}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        )}
-      </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
