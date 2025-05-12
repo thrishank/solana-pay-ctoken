@@ -56,7 +56,7 @@ export async function POST(
   const mint_address = new PublicKey(data.mint);
 
   const RPC_ENDPOINT =
-    "https://devnet.helius-rpc.com/?api-key=20475b23-b7f2-46be-badc-ad4f62baf079";
+    "https://mainnet.helius-rpc.com/?api-key=20475b23-b7f2-46be-badc-ad4f62baf079";
 
   const connection: Rpc = createRpc(RPC_ENDPOINT, RPC_ENDPOINT, RPC_ENDPOINT);
 
@@ -110,7 +110,7 @@ export async function POST(
   });
   const base64 = serializedTransaction.toString("base64");
 
-  const message = "transfer compressed tokens";
+  const message = "claim your compressed tokens";
 
   await prisma.claim.update({
     where: {
