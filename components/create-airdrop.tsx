@@ -156,9 +156,31 @@ export function CreateAidrop() {
         </form>
       </Form>
 
-      {url && <div ref={qrRef}></div>}
+      <div className="flex flex-col items-center gap-6 p-6 bg-white rounded-xl shadow-lg max-w-md mx-auto">
+        {url && (
+          <div className="w-full text-center">
+            <div className="text-sm font-medium text-gray-800 mb-2">
+              Pay the requested tokens
+            </div>
+            <div
+              ref={qrRef}
+              className="mx-auto p-4 bg-gray-100 rounded-lg border w-fit"
+            />
+          </div>
+        )}
 
-      {claim && <div ref={claimQrRef}></div>}
+        {claim && (
+          <div>
+            <div className="text-base font-semibold text-gray-800">
+              QR Code to claim tokens
+            </div>
+            <div
+              ref={claimQrRef}
+              className="p-4 bg-gray-100 rounded-lg border w-fit"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

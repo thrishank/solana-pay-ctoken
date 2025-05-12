@@ -43,11 +43,12 @@ export async function POST(
 
   const { account } = await request.json();
 
-  const claimed = data.claimedBy.includes(account);
-
-  if (claimed) {
-    return NextResponse.json({ error: "Already claimed" }, { status: 400 });
-  }
+  // testing
+  // const claimed = data.claimedBy.includes(account);
+  //
+  // if (claimed) {
+  //   return NextResponse.json({ error: "Already claimed" }, { status: 400 });
+  // }
 
   const fromPubkey = new PublicKey(data.wallet);
   const toPubkey = new PublicKey(account);
@@ -96,6 +97,8 @@ export async function POST(
   const wallet = Keypair.fromSecretKey(
     new Uint8Array(JSON.parse(data.privateKey)),
   );
+
+  console.log(wallet.publicKey);
 
   transaction.partialSign(wallet);
 
