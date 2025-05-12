@@ -24,22 +24,22 @@ model CreateToken {
 model Mint {
   id        String @id @default(cuid())
   recipient String
-  amount    Int
+  amount    BigInt
   mint      String
 }
 
 model Transfer {
   id        String @id @default(cuid())
   recipient String
-  amount    Int
+  amount    BigInt
   mint      String
 }
 
 model Claim {
   id          String   @id @default(cuid())
   mint        String
-  amount      Int
-  totalAmount Int
+  amount      BigInt
+  totalAmount BigInt
   wallet      String // creator's wallet
   privateKey  String
   claimedBy   String[] // recipient wallet who claimed

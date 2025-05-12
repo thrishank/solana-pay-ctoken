@@ -1,0 +1,9 @@
+-- AlterTable
+ALTER TABLE "Claim" ALTER COLUMN "amount" SET DATA TYPE BIGINT,
+ALTER COLUMN "totalAmount" SET DATA TYPE BIGINT;
+
+-- AlterTable
+ALTER TABLE "Mint" ALTER COLUMN "amount" SET DATA TYPE BIGINT;
+
+-- AlterTable
+ALTER TABLE "Transfer" ALTER COLUMN "amount" SET DATA TYPE BIGINT;

@@ -37,10 +37,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## TODO
 
-1. Create airdrop claim page send tokens to account
-2. claim page with /qr/id
-3. qr code popup on generate and share qrcode button copy link
-4. add wallet connect in all 4 states
-5. Int issue in database
-6. loader on qr code generation
-7. qr code once done then end it
+1. qr code once done then end it
+2. claim page with /qr/id. share link, copy url
+3. add wallet connect in all 4 states
