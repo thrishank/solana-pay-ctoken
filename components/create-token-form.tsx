@@ -207,7 +207,7 @@ export function CreateTokenForm() {
                 Generating...
               </>
             ) : (
-              "Generate QR Code"
+              "Generate Solana Pay QR Code"
             )}
           </Button>{" "}
         </form>
