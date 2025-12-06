@@ -7,17 +7,17 @@ Also create airdrop campaigns, mint experience tokens and let attendees claim th
 
 ### Create Compressed Token
 
-Enter the token name, symbol, decimals and metadata URI. And generate the Soalna Pay QR code/URL.
+Enter the token name, symbol, decimals and metadata URI. And generate the solana Pay QR code/URL.
 The qrcode/url contains a serializedTransaction which contain two instructions create compressed token, and create the metadata using metaplex.
 The qr code can be scanned by any solana pay supported wallet(SolFlare), and the user will be prompted to approve the transaction.
 
 ### Mint Compressed Token
 
-Enter the token mint address, amount(raw in decimals) and recipient wallet address. And generate the Soalna Pay QR code/URL.
+Enter the token mint address, amount(raw in decimals) and recipient wallet address. And generate the solana Pay QR code/URL.
 
 ### Transfer Compressed Token
 
-Enter the token mint address, amount(raw in decimals) and recipient wallet address. And generate the Soalna Pay QR code/URL.
+Enter the token mint address, amount(raw in decimals) and recipient wallet address. And generate the solana Pay QR code/URL.
 
 ### cPOP
 
