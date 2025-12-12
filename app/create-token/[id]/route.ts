@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { CompressedTokenProgram } from "@lightprotocol/compressed-token";
 import { createRpc, Rpc } from "@lightprotocol/stateless.js";
 import { createCreateMetadataAccountV3Instruction } from "@metaplex-foundation/mpl-token-metadata";
+import { RPC_ENDPOINT } from "@/app/api/actions/common";
 
 const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
@@ -48,9 +49,6 @@ export async function POST(
 
   const payer = new PublicKey(account);
   const mint = Keypair.generate();
-
-  const RPC_ENDPOINT =
-    "https://mainnet.helius-rpc.com/?api-key=c991f045-ba1f-4d71-b872-0ef87e7f039d";
 
   const connection: Rpc = createRpc(RPC_ENDPOINT, RPC_ENDPOINT, RPC_ENDPOINT);
 

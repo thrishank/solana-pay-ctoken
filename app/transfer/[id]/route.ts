@@ -7,6 +7,7 @@ import {
   selectMinCompressedTokenAccountsForTransfer,
 } from "@lightprotocol/compressed-token";
 import { bn, createRpc, Rpc } from "@lightprotocol/stateless.js";
+import { RPC_ENDPOINT } from "@/app/api/actions/common";
 
 export async function GET() {
   return NextResponse.json(
@@ -41,9 +42,6 @@ export async function POST(
   const fromPubkey = new PublicKey(account);
   const toPubkey = new PublicKey(data.recipient);
   const mint_address = new PublicKey(data.mint);
-
-  const RPC_ENDPOINT =
-    "https://mainnet.helius-rpc.com/?api-key=c991f045-ba1f-4d71-b872-0ef87e7f039d";
 
   const connection: Rpc = createRpc(RPC_ENDPOINT, RPC_ENDPOINT, RPC_ENDPOINT);
 

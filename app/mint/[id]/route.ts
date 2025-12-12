@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { CompressedTokenProgram } from "@lightprotocol/compressed-token";
 import { createRpc, Rpc } from "@lightprotocol/stateless.js";
+import { RPC_ENDPOINT } from "@/app/api/actions/common";
 
 export async function GET() {
   return NextResponse.json(
@@ -48,9 +49,6 @@ export async function POST(
   }
 
   console.log(payer, toPubkey, mint_address);
-
-  const RPC_ENDPOINT =
-    "https://mainnet.helius-rpc.com/?api-key=c991f045-ba1f-4d71-b872-0ef87e7f039d";
 
   const connection: Rpc = createRpc(RPC_ENDPOINT, RPC_ENDPOINT, RPC_ENDPOINT);
 

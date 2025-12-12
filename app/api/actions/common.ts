@@ -9,4 +9,4 @@ export const headers = {
 };
 
 export const RPC_ENDPOINT =
-  "https://mainnet.helius-rpc.com/?api-key=c991f045-ba1f-4d71-b872-0ef87e7f039d";
+  "https://devnet.helius-rpc.com/?api-key=c991f045-ba1f-4d71-b872-0ef87e7f039d";
